@@ -54,7 +54,7 @@ def read_vulgate(path='vulgate/source', remove_chars='%;*'):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', default='vulgate/source')
+    parser.add_argument('--source', default='output/vulgate/source')
     parser.add_argument('--target', default='output/vulgate.csv')
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--abbrev', default='latin.abbrv')
