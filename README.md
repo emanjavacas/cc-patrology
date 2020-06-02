@@ -20,3 +20,4 @@ to that installation to run `run.py`.
 - An installation of `pie`: `pip install nlp-pie` should do it. There is a pie model
 in the repository that can be used to tag medieval latin.
 
+All required python packages are listed in the attached `requirements.txt` file.
