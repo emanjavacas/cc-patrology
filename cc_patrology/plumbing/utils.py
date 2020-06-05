@@ -1,4 +1,5 @@
 
+import itertools
 import json
 from lxml import etree
 
@@ -90,3 +91,34 @@ def read_vulgate(fields=('pos', 'tt', 'pie'), **kwargs):
         verses[book, chapter, verse_num] = cur
         cur += 1
     return vulgate, verses
+
+
+def is_range(refs):
+    book, chapter, verse = zip(*list(map(decode_ref, refs)))
+    if len(set(book)) == 1 and len(set(chapter)) == 1:
+        verse = list(sorted(map(int, verse)))
+        start, *_, stop = verse
+        if start != stop and list(range(start, stop + 1)) == verse:
+            return True
+    return False
+
+
+def load_blb_refs(path='output/blb.refs.json', max_range=-1):
+    with open(path) as f:
+        refs = json.loads(f.read())
+
+    def key(obj):
+        return obj.get('group')
+
+    filtered = []
+    refs.sort(key=key)
+    for _, group in itertools.groupby(refs, key=key):
+        group = list(group)
+        if len(group) > 1 and max_range > 0 and len(group) > max_range:
+            if is_range([ref['source'] for ref in group]):
+                continue
+            elif is_range([ref['target'] for ref in group]):
+                continue
+        filtered.extend(group)
+
+    return filtered
