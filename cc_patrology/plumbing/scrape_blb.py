@@ -94,7 +94,6 @@ if __name__ == '__main__':
 
     # collects pairs
     maps = []
-    group = 0
     for a in parts:
         res = requests.get(os.path.join(root, a))
         soup = BeautifulSoup(res.content)
@@ -112,28 +111,24 @@ if __name__ == '__main__':
             except ValueError as e:
                 print(e)
                 continue
+
             if is_range_s and is_range_t:
                 if not len(source) == len(target):
                     print("skipping unequal ranges with lengths",
                           len(source), len(target))
                     continue
                 else:
-                    for s_ref, t_ref in zip(source, target):
-                        s_ref, t_ref = encode_ref(s_ref), encode_ref(t_ref)
-                        maps.append({'source': s_ref, 'target': t_ref,
-                                     'ref_type': rtype, 'group': group})
+                    maps.append({'source': [encode_ref(s_ref) for s_ref in source],
+                                 'target': [encode_ref(t_ref) for t_ref in target],
+                                 'ref_type': rtype})
             elif (is_range_s and len(target) > 1) or (is_range_t and len(source) > 1):
                 print("unequal lengths", len(source), len(target))
                 print(source)
                 print(target)
             else:
-                for s_ref in source:
-                    for t_ref in target:
-                        maps.append({'source': encode_ref(s_ref),
-                                     'target': encode_ref(t_ref),
-                                     'ref_type': rtype, 'group': group})
-
-            group += 1
+                maps.append({'source': [encode_ref(s_ref) for s_ref in source],
+                             'target': [encode_ref(t_ref) for t_ref in target],
+                             'ref_type': rtype})
 
     with open(args.target, 'w') as f:
         json.dump(maps, f)
