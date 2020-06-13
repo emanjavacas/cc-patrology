@@ -21,7 +21,9 @@ if __name__ == '__main__':
         res = requests.get(url)
         soup = BeautifulSoup(res.content)
         for verse in soup.find_all('span', {'class': 'reftext'}):
-            text = str(verse.next_sibling).strip()
+            text = str(verse.next_sibling)
+            text = re.sub(r"<[^>]+", "", text).strip()
+            text = ' '.join(text.split())
             if not text:
                 print("oops: no text")
                 print(verse)

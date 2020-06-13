@@ -22,23 +22,30 @@ if __name__ == '__main__':
         import pie
         piemodel = pie.SimpleModel.load(args.pie_path)
         piemodel.to(args.device)
-    if args.treetagger_dir:
-        import treetaggerwrapper
-        ttmodel = treetaggerwrapper.TreeTagger(
-            TAGDIR=args.treetagger_dir,
-            TAGLANG='la',
-            TAGOPT='-token -lemma -sgml -quiet -cap-heuristics',
-            # TAGINENCERR='strict',
-            TAGABBREV=args.abbrev)
+    if not args.treetagger_dir:
+        raise ValueError("Needs treetagger")
+    import treetaggerwrapper
+    ttmodel = treetaggerwrapper.TreeTagger(
+        TAGDIR=args.treetagger_dir,
+        TAGLANG='la',
+        TAGOPT='-token -lemma -sgml -quiet -cap-heuristics',
+        # TAGINENCERR='strict',
+        TAGABBREV=args.abbrev)
 
     with open(args.source) as inp, open(args.target, 'w') as f:
         for line in inp:
-            book, chapter, verse_id, verse = line.strip().split('\t')
+            book, chapter, verse_id, *verse = line.strip().split('\t')
+            # deal with empty verses
+            if not verse:
+                continue
+            verse = verse[0]
             verse = process_text(verse)
-            line = [book, chapter, verse_id, verse]
+            line = [book, chapter, verse_id]
             # tree-tagger
             if ttmodel is not None:
                 data = tagging.process_treetagger(ttmodel, verse)
+                verse = ' '.join(data['token'])  # and use it for other lemmatizer
+                line.append(verse)       # use treetagger tokenization
                 lemmas, pos = data['lemma'], data['pos']
                 lemmas = [lem if lem != '<unknown>' else '$unk$' for lem in lemmas]
                 line.append(' '.join(pos))
