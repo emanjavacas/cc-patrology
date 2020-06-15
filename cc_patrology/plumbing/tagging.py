@@ -36,6 +36,20 @@ def lemmatize_pie(model, sents, use_beam=True, beam_width=12, device='cpu',
     return preds
 
 
+def postag_pie(model, sents, device='cpu', input_type='sent'):
+
+    if input_type == 'sent':
+        sents = [sents]
+
+    inp, _ = pie.data.pack_batch(model.label_encoder, sents, device=device)
+    preds = model.predict(inp, "pos")['lemma']
+
+    # flatten output
+    preds = [tok for sent in sents for tok in preds]
+
+    return preds
+
+
 def lemmatize_pie_batch(model, sents, bsize=25, **kwargs):
     output = []
     for batch in segment_input(sents, bsize):
