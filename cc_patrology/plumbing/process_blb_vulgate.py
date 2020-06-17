@@ -5,7 +5,6 @@ import json
 from cc_patrology.utils import read_mapping
 
 
-mapping = read_mapping('blb.mapping')
 
 
 if __name__ == '__main__':
@@ -19,7 +18,9 @@ if __name__ == '__main__':
     parser.add_argument('--treetagger-dir')
     args = parser.parse_args()
     from . import tagging
+    from .process_blb_lxx import get_verses
 
+    mapping = read_mapping('blb.mapping')
     # set models
     piemodel = ttmodel = None
     if args.pie_path:
@@ -36,30 +37,7 @@ if __name__ == '__main__':
         # TAGINENCERR='strict',
         TAGABBREV=args.abbrev)
 
-    verses = {}
-    with open(args.source) as f:
-        for line in f:
-            chapter = json.loads(line.strip())
-            url = chapter['url']
-            bible = re.match(
-                r"https://www.blueletterbible.org/([^/]+)/.*", url
-            ).group(1)
-            if bible != 'vul':
-                continue
-            for data in chapter['verses']:
-                verse_id, verse = data
-                assert verse.find(verse_id) >= 0
-                _, verse = verse.split('-')
-                verse = verse.strip()
-
-                # verse id
-                book, rest = verse_id.split()
-                chapter, verse_id = rest.split(':')
-                book = mapping[book]
-                verse_id = book, chapter, verse_id
-                if verse_id in verses:
-                    assert verses[verse_id] == verse
-                verses[verse_id] = verse
+    verses = get_verses(args.source, 'vul', mapping)
 
     with open(args.target, 'w') as f:
         for (book, chapter, verse_id), verse in verses.items():
