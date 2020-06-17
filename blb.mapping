@@ -2,10 +2,13 @@ Mat	Matthew
 Isa	Isaiah
 Mic	Micah
 Hsa	Hosea
+Hos	Hosea
+Oba	Obadiah
 Jer	Jeremiah
 Deu	Deuteronomy
 Psa	Psalms
 Exd	Exodus
+Exo	Exodus
 Lev	Leviticus
 Gen	Genesis
 Mal	Malachi
@@ -19,6 +22,7 @@ Dan	Daniel
 2Ch	2 Chronicles
 Joe	Joel
 Eze	Ezekiel
+Ezr	Ezra
 Mar	Mark
 Luk	Luke
 2Ki	2 Kings
@@ -35,10 +39,13 @@ Hab	Habbakuk
 Rom	Romans
 Nah	Nahum
 1Cr	1 Corinthians
+1Co	1 Corinthians
 2Cr	2 Corinthians
+2Co	2 Corinthians
 Gal	Galatians
 Eph	Ephesians
 Phl	Philippians
+Phm	Philemon
 Col	Colossians
 1Th	1 Thessalonians
 2Th	2 Thessalonians
@@ -46,8 +53,11 @@ Col	Colossians
 Ecc	Ecclesiastes
 2Ti	2 Timothy
 Hbr	Hebrews
+Rth	Ruth
 Hag	Haggai
 Jam	James
+Sng	Song of songs
+Tit	Titus
 1Pe	1 Peter
 2Pe	2 Peter
 1Jo	1 John
