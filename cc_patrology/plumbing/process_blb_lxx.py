@@ -17,7 +17,6 @@ if __name__ == '__main__':
     parser.add_argument('--target', default='output/blb.lxx.csv')
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--pie-lemma-path')
-    parser.add_argument('--pie-lemma-path')
     parser.add_argument('--pie-pos-path')
     args = parser.parse_args()
 
