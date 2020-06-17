@@ -5,27 +5,26 @@ import os
 
 from lxml import etree
 
-from . import tagging
-
 
 def get_doc_id(tree):
     return tree.find('//div1').attrib['n'] + '-' + tree.find('//div2').attrib['n']
 
 
-def get_verses(tree):
-    elems = tree.xpath('//*[local-name() = "s" or local-name() = "milestone"]')
-    for idx, (milestone, s) in enumerate(zip(elems[::2], elems[1::2])):
-        try:
-            assert milestone.tag == 'milestone', milestone.tag
+def get_verses(tree, f):
+    for milestone in tree.xpath('//*[local-name() = "milestone"]'):
+        if not milestone.tail.strip():
+            s = milestone.getnext()
             assert s.tag == 's', s.tag
-            assert idx + 1 == int(milestone.attrib['n']), \
-                (idx + 1, milestone.attrib['n'])
-            yield idx + 1, ' '.join(s.text.split())
-        except Exception as e:
-            print(e)
+            text = s.text
+        else:
+            text = milestone.tail
+
+        assert text
+
+        yield milestone.attrib['n'], ' '.join(text.strip().split())
 
 
-def read_vulgate(path='vulgate/source', remove_chars='%;*'):
+def read_vulgate(path='output/vulgate/source', remove_chars='%;*'):
     by_doc_id = collections.defaultdict(dict)
     for f in os.listdir(path):
         if not f.endswith('xml'):
@@ -33,11 +32,10 @@ def read_vulgate(path='vulgate/source', remove_chars='%;*'):
         with open(os.path.join(path, f)) as fn:
             tree = etree.fromstring(fn.read().encode('utf-8')).getroottree()
         doc_id = get_doc_id(tree)
-        for idx, verse in get_verses(tree):
+        for idx, verse in get_verses(tree, f):
             # some verses are missing from the original...
             if verse == '[]':
                 continue
-
             processed = []
             for w in verse.split():
                 w_ = w
@@ -61,6 +59,8 @@ if __name__ == '__main__':
     parser.add_argument('--pie-path')
     parser.add_argument('--treetagger-dir')
     args = parser.parse_args()
+
+    from cc_patrology.plumbing import tagging
 
     # set models
     piemodel = ttmodel = None

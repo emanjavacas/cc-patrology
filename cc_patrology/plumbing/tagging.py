@@ -42,7 +42,7 @@ def postag_pie(model, sents, device='cpu', input_type='sent'):
         sents = [sents]
 
     inp, _ = pie.data.pack_batch(model.label_encoder, sents, device=device)
-    preds = model.predict(inp, "pos")['lemma']
+    preds = model.predict(inp, "pos")['pos']
 
     # flatten output
     preds = [tok for sent in sents for tok in preds]

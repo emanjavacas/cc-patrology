@@ -8,7 +8,6 @@ from cc_patrology import utils
 
 ROOT = "https://biblehub.com/vul/"
 START = "https://biblehub.com/vul/genesis/1.htm"
-STOP = "https://biblehub.com/vul/revelation/22.htm"
 
 if __name__ == '__main__':
 
@@ -31,7 +30,7 @@ if __name__ == '__main__':
             verses[verse_id] = text
         _, post = soup.find('div', {'id': 'topheading'}).find_all('a')
         url = os.path.join(ROOT, post.attrs['href'][3:])
-        if url == STOP:
+        if url == START:
             break
         n_urls += 1
 
@@ -43,8 +42,3 @@ if __name__ == '__main__':
                 r'/multi/([^/]+)/([0-9]+)-([0-9]+).*', verse).groups(1)
             book = mapping[book]
             f.write('\t'.join([book, chapter, verse, ' '.join(text.split())]) + '\n')
-
-
-import collections
-collections.Counter(
-    [w for l in verses.values() for w in l.strip().split() if 'j' in w])
