@@ -5,6 +5,7 @@ import urllib.request
 from lxml import etree
 from bs4 import BeautifulSoup
 
+
 TOC = "http://www.perseus.tufts.edu/hopper/xmltoc?doc=Perseus%3Atext%3A1999.02.0060"
 
 
@@ -15,6 +16,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     toc = etree.fromstring(urllib.request.urlopen(TOC).read()).getroottree()
+    missing = 0
 
     targets = []
     for chunk in toc.findall("chunk"):
@@ -31,6 +33,9 @@ if __name__ == '__main__':
             print("oops at ", url, str(e))
             continue
         name = html.find(name='span', attrs={'class': 'title'}).text
+        if name == 'Latin Vulgate':
+            name = 'Missing.{}'.format(missing)
+            missing += 1
         name = '_'.join(name.split())
 
         for idx, chapter in enumerate(html.findAll('a', title=re.compile("chapter .*"))):
