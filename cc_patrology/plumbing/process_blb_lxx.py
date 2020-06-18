@@ -28,6 +28,8 @@ def get_verses(path, target_bible, mapping):
                     continue
                 if re.search(r'^[\[(][^\])]+[)\]]', verse):
                     verse = re.sub(r'^[\[(][^\])]+[)\]]', '', verse).strip()
+                if not verse:
+                    continue
 
                 # verse id
                 book, rest = verse_id.split()

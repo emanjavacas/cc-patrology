@@ -5,8 +5,6 @@ import json
 from cc_patrology.utils import read_mapping
 
 
-
-
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
