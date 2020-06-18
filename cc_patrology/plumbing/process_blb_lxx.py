@@ -27,9 +27,11 @@ def get_verses(path, target_bible, mapping):
                 if verse.startswith('See '):
                     continue
                 if re.search(r'^[\[(][^\])]+[)\]]', verse):
+                    # drop leading reference (LXX;...), [Vulgate...]
                     verse = re.sub(r'^[\[(][^\])]+[)\]]', '', verse).strip()
-                if not verse:
-                    continue
+                if 'Vulgate' in verse:
+                    # drop [Vulgate] reference inside verse
+                    verse = re.sub(r'[\[(][^\])]+[)\]]', '', verse).strip()
 
                 # verse id
                 book, rest = verse_id.split()
@@ -39,6 +41,8 @@ def get_verses(path, target_bible, mapping):
                 if verse_id in verses:
                     assert verses[verse_id] == verse
                 verses[verse_id] = verse
+
+    print(len(verses))
 
     return verses
 
