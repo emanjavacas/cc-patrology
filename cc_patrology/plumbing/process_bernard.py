@@ -220,15 +220,17 @@ if __name__ == '__main__':
         ttlemmas = [lem if lem != '<unknown>' else '$unk$' for lem in ttlemmas]
         # pie lemmatizer
         pielemmas = []
-        for i in range(0, len(tokens), 200):
-            print(tokens[i:i+200])
+        for i in range(0, len(tokens), 500):
+            # print(tokens[i:i+500])
             pielemmas.extend(tagging.lemmatize_pie(
-                piemodel, tokens[i:i+200], device=args.device))
+                piemodel, tokens[i:i+500], device=args.device))
         assert len(ttlemmas) == len(ttpos) == len(words) == len(pielemmas)
 
         if not os.path.isdir(args.target):
             os.makedirs(args.target)
-        source_path = '.'.join(os.path.join(args.target, f).split('.')[:-1])
+        source_path = '.'.join(
+            os.path.join(args.target, os.path.basename(f)).split('.')[:-1])
+        
         with open(source_path + '.txt', 'w') as f_out:
             for (w_id, token, pos, lemma), ttpos, ttlemma, pielemma in zip(
                     words, ttpos, ttlemmas, pielemmas):
