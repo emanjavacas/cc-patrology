@@ -175,7 +175,7 @@ def process_tree(tree):
 
         refs.append({'ref_type': ref_type,
                      'span': span,
-                     'target': ref,
+                     'target': target,
                      'source': source})
 
     return words, refs
