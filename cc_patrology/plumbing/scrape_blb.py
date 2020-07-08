@@ -76,6 +76,13 @@ def get_rtype(rtype, rest):
     return rtype
 
 
+fixes = {
+    ("Matthew_5_5",): {
+        ("Psalms_37_11",):
+        "source": ["Matthew_5_4"], "target": ["Psalms_37_11"]}
+}
+
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
@@ -118,17 +125,29 @@ if __name__ == '__main__':
                           len(source), len(target))
                     continue
                 else:
-                    maps.append({'source': [encode_ref(s_ref) for s_ref in source],
-                                 'target': [encode_ref(t_ref) for t_ref in target],
-                                 'ref_type': rtype})
+                    ref = {'source': [encode_ref(s_ref) for s_ref in source],
+                           'target': [encode_ref(t_ref) for t_ref in target],
+                           'ref_type': rtype}
+                    if tuple(ref['source']) in fixes:
+                        if tuple(ref['target']) in fixes[tuple(ref['source'])]:
+                            fix = fixes[tuple(ref['source'])][tuple(ref['target'])]
+                            ref['source'] = fix['source']
+                            ref['target'] = fix['target']
+                    maps.append(ref)
             elif (is_range_s and len(target) > 1) or (is_range_t and len(source) > 1):
                 print("unequal lengths", len(source), len(target))
                 print(source)
                 print(target)
             else:
-                maps.append({'source': [encode_ref(s_ref) for s_ref in source],
+                ref = {'source': [encode_ref(s_ref) for s_ref in source],
                              'target': [encode_ref(t_ref) for t_ref in target],
-                             'ref_type': rtype})
+                             'ref_type': rtype}
+                if tuple(ref['source']) in fixes:
+                    if tuple(ref['target']) in fixes[tuple(ref['source'])]:
+                        fix = fixes[tuple(ref['source'])][tuple(ref['target'])]
+                        ref['source'] = fix['source']
+                        ref['target'] = fix['target']
+                maps.append(ref)
 
     with open(args.target, 'w') as f:
         json.dump(maps, f)

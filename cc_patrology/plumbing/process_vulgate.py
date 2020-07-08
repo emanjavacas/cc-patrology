@@ -81,17 +81,22 @@ if __name__ == '__main__':
         for doc_id, verses in tqdm.tqdm(list(read_vulgate(path=args.source).items())):
             book, chapter = doc_id.split('-')
             for verse_id, verse in verses.items():
-                line = [book, chapter, str(verse_id), verse]
+                line = [book, chapter, str(verse_id)]
                 # tree-tagger
                 if ttmodel is not None:
                     data = tagging.process_treetagger(ttmodel, verse)
+                    verse = ' '.join(data['token'])  # and use it for other lemmatizer
+                    line.append(' '.join(verse))
                     lemmas, pos = data['lemma'], data['pos']
                     lemmas = [lem if lem != '<unknown>' else '$unk$' for lem in lemmas]
                     line.append(' '.join(pos))
                     line.append(' '.join(lemmas))
+                    assert len(verse.split()) == len(lemmas) == len(pos)
                 # pie lemmatizer
                 if piemodel is not None:
                     lemmas = tagging.lemmatize_pie(
-                        piemodel, verse.lower().split(), device=args.device)
+                        piemodel, verse.split(), device=args.device)
                     line.append(' '.join(lemmas))
+                    assert len(lemmas) == len(verse.split())
+
                 f.write('\t'.join(line) + '\n')
