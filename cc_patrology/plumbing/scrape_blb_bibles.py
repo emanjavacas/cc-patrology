@@ -30,41 +30,46 @@ def get_verses(url, lxx=False):
 
 
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('bible')
+    args = parser.parse_args()
     url_builder = "https://www.blueletterbible.org/{}/{}/{}/1".format
     last = None
+    # bibles = ['vul', 'lxx', 'kjv']:
+    bible = args.bible
 
     done = set()
-    if os.path.isfile('output/blb.json'):
-        with open('output/blb.json') as f:
+    if os.path.isfile('output/blb-{}.json'.format(bible)):
+        with open('output/blb-{}.json'.format(bible)) as f:
             for line in f:
                 line = json.loads(line.strip())
                 done.add(line['url'])
 
     print("{} already done".format(len(done)))
 
-    with open('output/blb.json', 'a+') as f:
-        for bible in ['vul', 'lxx']:
-            for book in books:
-                chapter = 1
-                repeats = 0
-                while repeats < 3:
-                    print(bible, book, chapter)
-                    try:
-                        url = url_builder(bible, book, chapter)
-                        if url in done:
-                            chapter += 1
-                            continue
-                    except Exception as e:
-                        print(url, e)
+    with open('output/blb-{}.json'.format(bible), 'a+') as f:
+        for book in books:
+            chapter = 1
+            repeats = 0
+            while repeats < 3:
+                print(bible, book, chapter)
+                try:
+                    url = url_builder(bible, book, chapter)
+                    if url in done:
                         chapter += 1
                         continue
-                    verses = get_verses(url, lxx=bible == 'lxx')
-                    if verses == last:
-                        repeats += 1
-                    else:
-                        f.write(json.dumps({"url": url, "verses": verses},
-                                           ensure_ascii=False) + '\n')
-                    last = verses
+                except Exception as e:
+                    print(url, e)
                     chapter += 1
-                # print("sleeping 10")
-                # time.sleep(10)
+                    continue
+                verses = get_verses(url, lxx=bible == 'lxx')
+                if verses == last:
+                    repeats += 1
+                else:
+                    f.write(json.dumps({"url": url, "verses": verses},
+                                       ensure_ascii=False) + '\n')
+                last = verses
+                chapter += 1
+            # print("sleeping 10")
+            # time.sleep(10)

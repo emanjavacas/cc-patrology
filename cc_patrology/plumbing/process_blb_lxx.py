@@ -9,7 +9,7 @@ from cc_patrology.utils import read_mapping
 
 def get_verses(path, target_bible, mapping):
     verses = {}
-    with open('output/blb.json') as f:
+    with open('output/blb-lxx.json') as f:
         for line in f:
             chapter = json.loads(line.strip())
             url = chapter['url']

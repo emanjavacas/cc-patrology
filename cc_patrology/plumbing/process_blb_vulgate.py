@@ -8,7 +8,7 @@ from cc_patrology.utils import read_mapping
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', default='output/blb.json')
+    parser.add_argument('--source', default='output/blb-vul.json')
     parser.add_argument('--target', default='output/blb.vulgate.csv')
     parser.add_argument('--device', default='cpu')
     parser.add_argument('--abbrev', default='latin.abbrv')
