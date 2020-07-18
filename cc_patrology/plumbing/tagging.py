@@ -1,10 +1,25 @@
 
+import json
 import pie
 
 
 def process_treetagger(model, sent):
     token, pos, lemma = zip(*[line.split('\t') for line in model.tag_text(sent)])
     return {'token': token, 'pos': pos, 'lemma': lemma}
+
+
+def process_standford(nlp, sent):
+    output = json.loads(nlp.annotate(
+        sent, properties={'annotators': 'pos,lemma',
+                          'pipelineLanguage': 'en',
+                          'outputFormat': 'json'}))
+    token, lemma, pos = [], [], []
+    for s in output['sentences']:
+        for w in s['tokens']:
+            token.append(w['originalText'])
+            lemma.append(w['lemma'])
+            pos.append(w['pos'])
+    return {'token': token, 'lemma': lemma, 'pos': pos}
 
 
 def segment_input(text, sent_len):
