@@ -15,6 +15,7 @@ CMD="$TTDIR/cmd"
 LIB="$TTDIR/lib"
 
 OPTIONS="-token -lemma -sgml -cap-heuristics"
+# OPTIONS="-token -lemma -sgml"
 TOKENIZER=${CMD}/utf8-tokenize.perl
 MWL=${CMD}/mwl-lookup.perl
 TAGGER=${BIN}/tree-tagger
