@@ -35,7 +35,7 @@ if __name__ == '__main__':
         # TAGINENCERR='strict',
         TAGABBREV=args.abbrev)
 
-    verses = get_verses(args.source, 'vul', mapping)
+    verses = get_verses(args.source, mapping)
 
     with open(args.target, 'w') as f:
         for (book, chapter, verse_id), verse in verses.items():

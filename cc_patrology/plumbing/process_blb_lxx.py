@@ -7,28 +7,25 @@ import json
 from cc_patrology.utils import read_mapping
 
 
-def get_verses(path, target_bible, mapping):
+def get_verses(path, mapping):
     verses = {}
-    with open('output/blb-lxx.json') as f:
+    with open(path) as f:
         for line in f:
             chapter = json.loads(line.strip())
-            url = chapter['url']
-            bible = re.match(
-                r"https://www.blueletterbible.org/([^/]+)/.*", url
-            ).group(1)
-            if bible != target_bible:
-                continue
             for data in chapter['verses']:
                 verse_id, verse = data
                 assert verse.find(verse_id) >= 0
                 _, *verse = verse.split('-')
                 verse = '-'.join(verse)
                 verse = verse.strip()
-                if verse.startswith('See '):
+                if verse.startswith('See Footnotes'):
                     continue
                 if re.search(r'^[\[(][^\])]+[)\]]', verse):
                     # drop leading reference (LXX;...), [Vulgate...]
-                    verse = re.sub(r'^[\[(][^\])]+[)\]]', '', verse).strip()
+                    # unless we lose the whole reference
+                    dropped = re.sub(r'^[\[(][^\])]+[)\]]', '', verse).strip()
+                    if dropped:
+                        verse = dropped
                 if 'Vulgate' in verse:
                     # drop [Vulgate] reference inside verse
                     verse = re.sub(r'[\[(][^\])]+[)\]]', '', verse).strip()
@@ -62,7 +59,7 @@ if __name__ == '__main__':
 
     mapping = read_mapping('blb.mapping')
 
-    verses = get_verses(args.source, 'lxx', mapping)
+    verses = get_verses(args.source, mapping)
 
     # set models
     lemma_model = pie.SimpleModel.load(args.pie_lemma_path)
