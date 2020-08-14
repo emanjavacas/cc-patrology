@@ -15,7 +15,10 @@ def read_tokens(text):
         try:
             token, pos, lemma = line.split('\t')
             yield token, pos, lemma
+        except ValueError:
+            continue
         except Exception as e:
+            print(line)
             raise e
 
 
@@ -79,14 +82,21 @@ if __name__ == '__main__':
         piemodel.to(args.device)
 
     for f in glob.glob('{}/*/*'.format(args.source)):
-        tree = utils.parse_tree(f)
-        text, refs = read_text(tree)
-
+        print(f)
         # crete dirs
         *_, dirname, fname = f.split('/')
         dirname = os.path.join(args.target, dirname)
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
+        tfname = '{}.{}'.format('.'.join(fname.split('.')[:-1]), 'txt')
+        refname = '.'.join(tfname.split('.')[:-1]) + '.refs.json'
+        if os.path.isfile(os.path.join(dirname, tfname)) and \
+           os.path.isfile(os.path.join(dirname, refname)):
+            print("Skipping", tfname)
+            continue
+
+        tree = utils.parse_tree(f)
+        text, refs = read_text(tree)
 
         # add pie lemmas if needed
         token, *_ = zip(*text)
@@ -97,12 +107,10 @@ if __name__ == '__main__':
             text = [(*tup, lem) for tup, lem in zip(text, lemmas)]
 
         # dump text
-        fname = '{}.{}'.format('.'.join(fname.split('.')[:-1]), 'txt')
-        with open(os.path.join(dirname, fname), 'w') as f:
+        with open(os.path.join(dirname, tfname), 'w') as f:
             for line in text:
                 f.write('\t'.join(line) + '\n')
 
-        # dump refs
-        refname = '.'.join(fname.split('.')[:-1]) + '.refs.json'
+        # dump refs        
         with open(os.path.join(dirname, refname), 'w') as f:
             json.dump(refs, f)
